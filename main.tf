@@ -26,6 +26,25 @@ EOF
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "ecr_scan_notification_lambda" {
+  alarm_name                = "${var.prefix}-notification"
+  comparison_operator       = "GreaterThanThreshold"
+  evaluation_periods        = 1
+  metric_name               = "Errors"
+  namespace                 = "AWS/Lambda"
+  period                    = 60
+  statistic                 = "Sum"
+  unit                      = "Count"
+  threshold                 = 1
+  alarm_description         = "This metric monitors the errors into lambda function"
+  insufficient_data_actions = []
+  ok_actions = []
+
+  dimensions = {
+    FunctionName = aws_lambda_function.ecr_scan_notification_lambda.function_name
+  }
+}
+
 resource "aws_iam_role" "ecr_scan_role" {
   name               = "${var.prefix}-events-role"
   tags               = var.tags
